@@ -1,46 +1,70 @@
 import { REGRAS_RANKING } from './rules.js';
 
 /**
- * Determina o nível consultando a tabela imutável original.
- */
-export function determinarNivel(vitoriasEquivalentes) {
-    const faixa = REGRAS_RANKING.find(
-        f => vitoriasEquivalentes >= f.min && vitoriasEquivalentes <= f.max
-    );
-    return faixa ? faixa.nivel : "Ferro";
-}
-
-/**
  * Calculadora de Partidas Rankeadas Ponderada
- * Aplica os conceitos de Justiça, Habilidade, Constância e Dominância.
+ * Mantém a filosofia de Habilidade, Constância e Dominância com código elementar.
  */
 export function calcularPartidasRankeadas(vitorias, derrotas) {
-    const v = Math.max(0, Math.floor(Number(vitorias)) || 0);
-    const d = Math.max(0, Math.floor(Number(derrotas)) || 0);
-
+    // 1. Tratamento básico de entradas
+    const v = Number(vitorias) || 0;
+    const d = Number(derrotas) || 0;
     const totalPartidas = v + d;
     const saldoVitorias = v - d;
 
-    // Se não há partidas ou o saldo não é positivo, o nível base é Ferro (0 pts)
+    // Se não jogou ou não tem saldo positivo, cai direto em Ferro
     if (totalPartidas === 0 || saldoVitorias <= 0) {
         const nivel = "Ferro";
         const mensagem = `O Herói tem de saldo de **${saldoVitorias}** está no nível de **${nivel}**`;
         return { saldoVitorias, vitoriasEquivalentes: 0, nivel, mensagem };
     }
 
-    // 1. Habilidade (Win Rate em decimal: 0.0 a 1.0)
-    const winRate = v / totalPartidas;
+    // -------------------------------------------------------------
+    // SUA FILOSOFIA DE CÁLCULO (Passo a Passo Simples)
+    // -------------------------------------------------------------
 
-    // 2. Constância (Fator Logarítmico Suave)
-    const fatorConstancia = 1 + Math.log10(1 + (totalPartidas / 100));
+    // A. Taxa de Habilidade (Win Rate de 0.0 a 1.0)
+    const taxaHabilidade = v / totalPartidas;
 
-    // 3. Cálculo final das Vitórias Equivalentes para encaixe nas faixas originais
-    const vitoriasEquivalentes = Math.round(saldoVitorias * winRate * fatorConstancia);
+    // B. Fator de Constância (Bônus por volume de partidas jogadas)
+    let fatorConstancia = 1.0;
+    if (totalPartidas >= 100) {
+        fatorConstancia = 1.3; // Veterano experiente (30% de bônus)
+    } else if (totalPartidas >= 50) {
+        fatorConstancia = 1.2; // Jogador constante (20% de bônus)
+    } else if (totalPartidas >= 20) {
+        fatorConstancia = 1.1; // Jogador em evolução (10% de bônus)
+    }
 
-    // Determina o nível usando a tabela imutável do desafio
-    const nivel = determinarNivel(vitoriasEquivalentes);
+    // C. Fator de Dominância (Bônus para quem tem Taxa de Vitória acima de 70%)
+    let fatorDominancia = 1.0;
+    if (taxaHabilidade >= 0.70) {
+        fatorDominancia = 1.15; // Dominante no servidor (15% de bônus)
+    }
 
-    // Formatação de saída estrita do desafio
+    // D. Cálculo final das Vitórias Equivalentes
+    const pontuacaoBruta = saldoVitorias * taxaHabilidade * fatorConstancia * fatorDominancia;
+    const vitoriasEquivalentes = Math.round(pontuacaoBruta);
+
+    // -------------------------------------------------------------
+    // 2. Busca o Nível na Tabela usando if/else tradicional
+    // -------------------------------------------------------------
+    let nivel = "Ferro";
+    
+    if (vitoriasEquivalentes >= 101) {
+        nivel = "Imortal";
+    } else if (vitoriasEquivalentes >= 91) {
+        nivel = "Lendário";
+    } else if (vitoriasEquivalentes >= 81) {
+        nivel = "Diamante";
+    } else if (vitoriasEquivalentes >= 51) {
+        nivel = "Ouro";
+    } else if (vitoriasEquivalentes >= 21) {
+        nivel = "Prata";
+    } else if (vitoriasEquivalentes >= 11) {
+        nivel = "Bronze";
+    }
+
+    // 3. Retorno da mensagem oficial do desafio
     const mensagem = `O Herói tem de saldo de **${saldoVitorias}** está no nível de **${nivel}**`;
 
     return {
