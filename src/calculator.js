@@ -1,6 +1,19 @@
 import { REGRAS_RANKING } from './rules.js';
 
 /**
+ * Função auxiliar para buscar o Nível na Tabela
+ */
+export function determinarNivel(vitoriasEquivalentes) {
+    if (vitoriasEquivalentes >= 101) return "Imortal";
+    if (vitoriasEquivalentes >= 91) return "Lendário";
+    if (vitoriasEquivalentes >= 81) return "Diamante";
+    if (vitoriasEquivalentes >= 51) return "Ouro";
+    if (vitoriasEquivalentes >= 21) return "Prata";
+    if (vitoriasEquivalentes >= 11) return "Bronze";
+    return "Ferro";
+}
+
+/**
  * Calculadora de Partidas Rankeadas Ponderada
  * Mantém a filosofia de Habilidade, Constância e Dominância com código elementar.
  */
@@ -18,53 +31,33 @@ export function calcularPartidasRankeadas(vitorias, derrotas) {
         return { saldoVitorias, vitoriasEquivalentes: 0, nivel, mensagem };
     }
 
-    // -------------------------------------------------------------
-    // SUA FILOSOFIA DE CÁLCULO (Passo a Passo Simples)
-    // -------------------------------------------------------------
-
-    // A. Taxa de Habilidade (Win Rate de 0.0 a 1.0)
+    // A. Taxa de Habilidade (Win Rate)
     const taxaHabilidade = v / totalPartidas;
 
-    // B. Fator de Constância (Bônus por volume de partidas jogadas)
+    // B. Fator de Constância
     let fatorConstancia = 1.0;
     if (totalPartidas >= 100) {
-        fatorConstancia = 1.3; // Veterano experiente (30% de bônus)
+        fatorConstancia = 1.3;
     } else if (totalPartidas >= 50) {
-        fatorConstancia = 1.2; // Jogador constante (20% de bônus)
+        fatorConstancia = 1.2;
     } else if (totalPartidas >= 20) {
-        fatorConstancia = 1.1; // Jogador em evolução (10% de bônus)
+        fatorConstancia = 1.1;
     }
 
-    // C. Fator de Dominância (Bônus para quem tem Taxa de Vitória acima de 70%)
+    // C. Fator de Dominância
     let fatorDominancia = 1.0;
     if (taxaHabilidade >= 0.70) {
-        fatorDominancia = 1.15; // Dominante no servidor (15% de bônus)
+        fatorDominancia = 1.15;
     }
 
-    // D. Cálculo final das Vitórias Equivalentes
+    // D. Vitórias Equivalentes
     const pontuacaoBruta = saldoVitorias * taxaHabilidade * fatorConstancia * fatorDominancia;
     const vitoriasEquivalentes = Math.round(pontuacaoBruta);
 
-    // -------------------------------------------------------------
-    // 2. Busca o Nível na Tabela usando if/else tradicional
-    // -------------------------------------------------------------
-    let nivel = "Ferro";
-    
-    if (vitoriasEquivalentes >= 101) {
-        nivel = "Imortal";
-    } else if (vitoriasEquivalentes >= 91) {
-        nivel = "Lendário";
-    } else if (vitoriasEquivalentes >= 81) {
-        nivel = "Diamante";
-    } else if (vitoriasEquivalentes >= 51) {
-        nivel = "Ouro";
-    } else if (vitoriasEquivalentes >= 21) {
-        nivel = "Prata";
-    } else if (vitoriasEquivalentes >= 11) {
-        nivel = "Bronze";
-    }
+    // Determina o Nível
+    const nivel = determinarNivel(vitoriasEquivalentes);
 
-    // 3. Retorno da mensagem oficial do desafio
+    // Mensagem oficial
     const mensagem = `O Herói tem de saldo de **${saldoVitorias}** está no nível de **${nivel}**`;
 
     return {
