@@ -1,0 +1,14 @@
+{
+  "name": "calculadora-partidas-rankeadas",
+  "version": "1.0.0",
+  "description": "Calculadora de nível e saldo de rankeadas desenvolvida com arquitetura modular e testes automatizados.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test --experimental-test-coverage tests/*.test.js"
+  },
+  "keywords": ["javascript", "clean-code", "dio", "logic"],
+  "author": "Seu Nome",
+  "license": "MIT"
+}
